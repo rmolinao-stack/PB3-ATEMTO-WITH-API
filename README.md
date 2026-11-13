@@ -35,6 +35,9 @@ PB3-ATEMTO-WITH-API/
 │   ├── carga_api_key.py        # Carga de API key de gemini.
 │   └── utils.py                # Funciones genéricas auxiliares y reutilizables.
 ├── data/                       # Corpus del RAG
+├── database/                   # Modelo y persistencia de datos
+│   ├── db.py                   # Persistencia del historial con SQLModel.
+│   └── models.py               # Modelos SQLModel del historial.
 ├── entregables/                # memorias e informe final.
 │   ├── memoria_agent.md        # memoria de la parte de multiagente.
 │   ├── memoria_api_mlops.md    # memoria de la parte de MLOPS.
@@ -154,7 +157,7 @@ Hay dos modos de ejecución:
 streamlit run app_agent.py
 ```
 
-### Testeo de tools:
+### Testeo de tools multiagente:
 
 ```text
   python main.py --test-tool-rag-tarifas      # Ejecuta un test de pruebas para la tool rag-tarifas.
@@ -164,7 +167,13 @@ streamlit run app_agent.py
   python main.py --test-tool-llegada-tren     # Ejecuta un test de pruebas para la tool de obtención de los tiempos de llegada de trenes en TMB.
 ```
 
-## Orden de ejecución estandar ATeMto local
+### Para probar la API:
+
+```text
+uvicorn api.app_api:app --reload --port 8000
+```
+
+## Orden de ejecución estandar ATeMto local para multiagente
 
 * Paso 1: Cargar corpus, embedding y recrear index:
 

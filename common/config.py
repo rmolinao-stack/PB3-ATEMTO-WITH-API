@@ -1,6 +1,7 @@
 """ En este fichero se definen los parametros de configuración globales de todo el proyecto."""
 
 from pathlib import Path
+import os
 
 # --- Ingesta y chunking ---
 CHUNK_SIZE = 1000
@@ -60,3 +61,22 @@ ESTACIONS_CSV_PATH = Path(__file__).parent.parent / "assets"  / "estacions.csv"
 
 TMB_METRO_ESTACIONS_URL = "https://api.tmb.cat/v1/itransit/metro/estacions?estacions="
 HTTP_TIMEOUT_SECONDS = 12
+
+# --- Parámetros para la API ---
+
+API_KEY: str | None = os.getenv("API_KEY") or None
+RATE_LIMIT_PER_MINUTE: int = int(os.getenv("RATE_LIMIT_PER_MINUTE", "30"))
+
+# Tope de tiempo por turno (POST /ask y /approve).
+# Miramos si está definida en el docker o similar y sino lo marcamos a 300 segundos (5 minutos) por defecto.
+ASK_TIMEOUT_SECONDS: int = int(os.getenv("ASK_TIMEOUT_SECONDS", "300"))
+
+_cors_raw = os.getenv(
+    "CORS_ORIGINS",
+    "http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:8501,http://localhost:3000",
+)
+CORS_ORIGINS: list[str] = [o.strip() for o in _cors_raw.split(",") if o.strip()]
+
+CORS_ALLOW_CREDENTIALS: bool = os.getenv(
+    "CORS_ALLOW_CREDENTIALS", "false"
+).lower() in ("true", "1", "yes")
