@@ -21,7 +21,12 @@ PB3-ATEMTO-WITH-API/
 ├── main.py                     # CLI: prepare / index / query / ask.
 ├── app_rag.py                  # Asistente de tarifas - RAG en Streamlit.
 ├── app_agent.py                # Multiagente en Streamlit.
-├── .streamlit/                 # Configuración streamlit    
+├── .streamlit/                 # Configuración streamlit
+├── api/                     
+│   ├── schemas.py              # Contrato HTTP de la API.
+│   ├── security.py             # Capa de seguridad de la API, para llamadas que requieren KEY.
+│   ├── rate_limit.py           # Para controlar muchas llamadas seguidas y evitar ataques masivos.
+│   └── app_api.py              # Fachada de entrada de la API.    
 ├── assets/                     
 │   ├── estacions.csv           # Lista de estaciones para extraer el ID necesaria para la API de TMB.
 │   └── plano_ATM.jpg           # Plano para la el especialista de recorridos.
