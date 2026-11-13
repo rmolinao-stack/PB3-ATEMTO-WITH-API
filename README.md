@@ -104,7 +104,7 @@ cp .env.example .env
 * **TMB_API_ID**: Identificador de la aplicación dada de alta en developer.tmb.cat. Para más información ver apartado especial de esta API en la memoria y visitar: https://developer.tmb.cat/docs/getting-started
 * **TMB_API_KEY**: Api Key para conectar al servicio de iMetro para conocer en tiempo real cuando llega el siguiente tren a una estación. Para más información ver apartado especial de esta API en la memoria y visitar: https://developer.tmb.cat/docs/getting-started
 
-## Modos de Ejecución 
+## Modos de Ejecución ATeMto local
 
 ### Construcción de RAG y ejecución aislada
 
@@ -159,7 +159,7 @@ streamlit run app_agent.py
   python main.py --test-tool-llegada-tren     # Ejecuta un test de pruebas para la tool de obtención de los tiempos de llegada de trenes en TMB.
 ```
 
-## Orden de ejecución estandar
+## Orden de ejecución estandar ATeMto local
 
 * Paso 1: Cargar corpus, embedding y recrear index:
 
@@ -172,6 +172,11 @@ python main.py --prepare --index --recreate-index
 ```text
 streamlit run app_agent.py
 ```
+
+## Uso de la API de ATeMto
+
+TBD
+
 ## Memoría del proyecto
 
 **Memoria de la construcción del multiagente**: [Pulsa aquí](./entregables/memoria_agent.md)
