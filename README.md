@@ -1,6 +1,6 @@
 # ATeMto
 
-**ATeMto** es el nombre comercial de **PB2-MULTIAGENTE-ATM-BCN**
+**ATeMto** es el nombre comercial de **PB3-ATEMTO-WITH-API**
 
 **ATeMto** es un empleado sintetico capaz de calcular el trayecto entre dos estaciones de la red ATM de Barcelona (sistema integrado que permite utilizar diferentes medios de transporte como metro, autobuses, Ferrocarrils, TRAMvia y Rodalies), calcular los abonos necesario a adquirir, así como dar información sobre sus tarifas y condiciones de uso, además de ser capaz de calcular el tiempo que tardará llegar el siguiente metro (TMB) dada una estación concreta (no se incluye el calculo del tiempo de llegada de convoys a las estaciones de FGC, Rodalíes, TRAMvia y autobuses ya que está fuera del scope del proyecto).
 
@@ -8,10 +8,12 @@
 
 **ATeMto** utiliza el RAG construido en **PB-RAG-ASISTENTE-TARIFAS-ATM-BCN**.
 
+**Novedades**: Para esta nueva versión **ATeMto** incorpora una API que permite que un cliente externo pueda consumir las propiedades de ATeMto, haciendo preguntas y obteniendo respuestas del ambito de **ATeMto**, para más detalle ver sección correspondiente.
+
 ## Estructura del proyecto
 
 ```text
-PB2-MULTIAGENTE-ATM-BCN/
+PB3-ATEMTO-WITH-API/
 ├── README.md
 ├── requirements.txt
 ├── .env.example
@@ -30,11 +32,10 @@ PB2-MULTIAGENTE-ATM-BCN/
 ├── data/                       # Corpus del RAG
 ├── entregables/                # memorias e informe final.
 │   ├── memoria_agent.md        # memoria de la parte de multiagente.
-│   ├── memoria_rag.md          # memoria de la parte de rag.
-│   └── Presentacion.pdf        # Presentación del producto.
+│   ├── memoria_api_mlops.md    # memoria de la parte de MLOPS.
+│   └── memoria_rag.md          # memoria de la parte de rag.
 ├── img/                        # Imagenes varias de apoyo.
 ├── multiagent/                 # Carpeta donde guardamos los ficheros de la capa de negocio del multiagente.
-│   ├── __init__.py
 │   ├── agent.py                # procesar_turno, aprobar_plan, run_demo
 │   ├── graph.py                # StateGraph multiagente + MemorySaver + HITL
 │   ├── llm.py                  # ChatGoogleGenerativeAI
@@ -47,6 +48,9 @@ PB2-MULTIAGENTE-ATM-BCN/
 │       ├── ruta_plano.py       # Tool, para más detalle ver memoría.
 │       └── zonas.py            # Tool, para más detalle ver memoría.
 ├── output/                     # Ficheros generados entre ellos el indice de chromaDB
+├── presentaciones/             # Presentaciones comerciales del producto
+│   ├── Presentacion_ATeMto.pdf # Presentación general del producto.
+│   └── Presentacion_API.pdf    # Presentación de la API del producto.
 ├── queries/                    # preguntas de evaluación para el RAG
 ├── rag/                        # Carpeta donde guardamos los ficheros de la capa de negocio del RAG.
 │   ├── pipeline.py             # Orquestador de la ingesta y otras llamadas.
@@ -72,7 +76,7 @@ PB2-MULTIAGENTE-ATM-BCN/
 Obtención del código fuente via git:
 
 ```text
-git clone https://github.com/rmolinao-stack/PB2-MULTIAGENTE-TARIFAS-ATM-BCN
+git clone https://github.com/rmolinao-stack/PB3-ATEMTO-WITH-API
 ```
 
 Se recomienda la instalación de un entorno virtual como Conda o Env. Ejemplo:
