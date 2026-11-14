@@ -83,3 +83,14 @@ CORS_ORIGINS: list[str] = [o.strip() for o in _cors_raw.split(",") if o.strip()]
 CORS_ALLOW_CREDENTIALS: bool = os.getenv(
     "CORS_ALLOW_CREDENTIALS", "false"
 ).lower() in ("true", "1", "yes")
+
+# Usamos PostgreSQL como nuestra BBDD en entorno real. Sin DATABASE_URL la app no arranca.
+_db = (os.getenv("DATABASE_URL") or "").strip()
+if not _db:
+    raise RuntimeError(
+        "Falta DATABASE_URL (Postgres). Copiad .env.example → .env y completadla."
+    )
+# Render a veces entrega postgres:// ; SQLAlchemy espera postgresql://
+if _db.startswith("postgres://"):
+    _db = "postgresql://" + _db[len("postgres://") :]
+DATABASE_URL = _db
