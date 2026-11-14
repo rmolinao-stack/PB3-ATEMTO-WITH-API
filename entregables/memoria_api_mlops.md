@@ -9,6 +9,14 @@ En este apartado se describen los arreglos y mejoras que se han realizado sobre 
 
 * Se arreglan los errores tipográficos indicados en la evaluación del anterior proyecto. Concretamente: Nombre de la presentación, ficheros init en la estructura de carpetas, nombre incorrecto del repo.
 
+## Dockers
+
+### Postgres
+
+Creación del docker:
+
+docker run --name postgres-atemto -e POSTGRES_USER=EL_USUARIO -e POSTGRES_PASSWORD=EL_PASSWORD -e POSTGRES_DB=NOMBRE_DB -p 5432:5432 -d postgres
+
 ## Decisiones técnicas
 
 TBD

@@ -84,6 +84,7 @@ CORS_ALLOW_CREDENTIALS: bool = os.getenv(
     "CORS_ALLOW_CREDENTIALS", "false"
 ).lower() in ("true", "1", "yes")
 
+
 # Usamos PostgreSQL como nuestra BBDD en entorno real. Sin DATABASE_URL la app no arranca.
 _db = (os.getenv("DATABASE_URL") or "").strip()
 if not _db:
@@ -91,7 +92,11 @@ if not _db:
         "Falta DATABASE_URL (Postgres). Copiad .env.example → .env y completadla."
     )
 # Render a veces entrega postgres:// ; SQLAlchemy espera postgresql://
+# Con psycopg[binary]>=3.2.0 hay que formatear la URL para que SQLAlchemy use postgresql+psycopg://
 if _db.startswith("postgres://"):
     #_db = "postgresql://" + _db[len("postgres://") :]
-    _db = _db.replace("postgres://", "postgresql://", 1)
+    _db = _db.replace("postgres://", "postgresql+psycopg://", 1)
+elif _db.startswith("postgresql://"):
+    #_db = "postgresql://" + _db[len("postgresql://") :]
+    _db = _db.replace("postgresql://", "postgresql+psycopg://", 1)
 DATABASE_URL = _db
