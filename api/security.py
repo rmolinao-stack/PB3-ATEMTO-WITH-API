@@ -29,6 +29,10 @@ def require_api_key(
     3) Clave OK → rate limit; si pasa, devolvemos la clave (el endpoint sigue).
     """
 
+    print(f"Requiring API key: {api_key}")
+    print(f"Server API key: {config.API_KEY}")
+    
+
     # Fallo del servidor (no del cliente): falta secreto en el entorno
     if not config.API_KEY:
         logger.error("auth 503: API_KEY no configurada en el servidor")

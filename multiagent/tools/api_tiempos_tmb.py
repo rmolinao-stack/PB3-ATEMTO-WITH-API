@@ -113,7 +113,7 @@ def API_llegada_tren_estacion_tmb(id_estacion: int, forzar_fallback: bool = Fals
     
     En caso de error devuelve un fallback con información general sobre la frecuencia de los trenes."""
 
-    load_dotenv()
+    load_dotenv(override=True)
     tmb_app_id = os.getenv("TMB_API_ID")
     tmb_app_key = os.getenv("TMB_API_KEY")
 
