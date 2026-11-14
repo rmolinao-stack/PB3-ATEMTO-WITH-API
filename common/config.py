@@ -92,5 +92,6 @@ if not _db:
     )
 # Render a veces entrega postgres:// ; SQLAlchemy espera postgresql://
 if _db.startswith("postgres://"):
-    _db = "postgresql://" + _db[len("postgres://") :]
+    #_db = "postgresql://" + _db[len("postgres://") :]
+    _db = _db.replace("postgres://", "postgresql://", 1)
 DATABASE_URL = _db
