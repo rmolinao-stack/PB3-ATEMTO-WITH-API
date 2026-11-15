@@ -11,6 +11,11 @@ En este apartado se describen los arreglos y mejoras que se han realizado sobre 
 
 ## Dockers
 
+### API
+
+Crear imagen: docker build -t atemto-image .
+Arrancar docker: docker run --rm --name atemto-container -p 8000:8000 --env-file .env atemto-image
+
 ### Postgres
 
 Creación del docker:

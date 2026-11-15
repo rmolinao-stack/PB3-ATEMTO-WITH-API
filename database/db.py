@@ -13,7 +13,6 @@ from database.models import Conversation, Message
 
 
 db_url = config.DATABASE_URL
-print(f"Connecting to database at {db_url}")
 # Conexión al postgresql. pool_pre_ping=True evita errores por conexiones cerradas tras inactividad en la nube
 engine = create_engine(db_url, echo=False, pool_pre_ping=True)
 
