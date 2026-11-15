@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="580" viewBox="0 0 1040 580" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+  </defs>
+
+  <rect width="1040" height="580" fill="#ffffff"/>
+
+  <!-- Usuario -->
+  <rect x="40" y="70" width="180" height="50" rx="8" fill="#f1f5f9" stroke="#334155" stroke-width="2"/>
+  <text x="130" y="101" text-anchor="middle" font-size="16" font-weight="bold" fill="#0f172a">Usuario</text>
+  <line x1="130" y1="120" x2="130" y2="180" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Front (fuera del proyecto) -->
+  <rect x="40" y="180" width="180" height="120" rx="8" fill="#fef9c3" stroke="#a16207" stroke-width="2" stroke-dasharray="8 5"/>
+  <text x="130" y="215" text-anchor="middle" font-size="18" font-weight="bold" fill="#0f172a">Front</text>
+  <text x="130" y="240" text-anchor="middle" font-size="13" fill="#0f172a">(PB3-ATEMTO-API-CLIENT)</text>
+  <text x="130" y="272" text-anchor="middle" font-size="12" font-style="italic" fill="#713f12">Fuera del alcance</text>
+  <text x="130" y="289" text-anchor="middle" font-size="12" font-style="italic" fill="#713f12">de este proyecto</text>
+
+  <!-- Front -> API -->
+  <line x1="220" y1="240" x2="370" y2="240" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="295" y="226" text-anchor="middle" font-size="12" fill="#334155">HTTP / JSON</text>
+  <text x="295" y="260" text-anchor="middle" font-size="12" fill="#334155">?api_key=...</text>
+
+  <!-- Entorno Docker -->
+  <rect x="340" y="40" width="660" height="380" rx="12" fill="#f8fafc" stroke="#64748b" stroke-width="2" stroke-dasharray="8 5"/>
+  <text x="360" y="68" font-size="14" font-weight="bold" fill="#475569">Entorno de despliegue (Docker)</text>
+
+  <!-- Contenedor API -->
+  <rect x="370" y="90" width="320" height="300" rx="10" fill="#ccfbf1" stroke="#0f766e" stroke-width="2"/>
+  <text x="530" y="114" text-anchor="middle" font-size="16" font-weight="bold" fill="#134e4a">API ATeMto</text>
+  <text x="530" y="132" text-anchor="middle" font-size="12" fill="#134e4a">FastAPI + uvicorn · contenedor atemto-container · :8000</text>
+
+  <rect x="390" y="148" width="280" height="45" rx="6" fill="#ffffff" stroke="#0f766e"/>
+  <text x="530" y="168" text-anchor="middle" font-size="13" fill="#0f172a">Seguridad</text>
+  <text x="530" y="184" text-anchor="middle" font-size="12" fill="#475569">api_key · rate limit · CORS</text>
+
+  <rect x="390" y="208" width="280" height="60" rx="6" fill="#ffffff" stroke="#0f766e"/>
+  <text x="530" y="230" text-anchor="middle" font-size="13" fill="#0f172a">Multiagente LangGraph</text>
+  <text x="530" y="248" text-anchor="middle" font-size="12" fill="#475569">supervisor + especialistas + HITL</text>
+
+  <rect x="390" y="283" width="280" height="45" rx="6" fill="#ffffff" stroke="#0f766e"/>
+  <text x="530" y="303" text-anchor="middle" font-size="13" fill="#0f172a">Tool RAG de tarifas</text>
+  <text x="530" y="319" text-anchor="middle" font-size="12" fill="#475569">ChromaDB (índice local)</text>
+
+  <rect x="390" y="338" width="280" height="40" rx="6" fill="#ffffff" stroke="#0f766e"/>
+  <text x="530" y="362" text-anchor="middle" font-size="12" fill="#475569">Tools: zonas · plano · estaciones · tiempos TMB</text>
+
+  <!-- API -> Postgres -->
+  <line x1="690" y1="240" x2="790" y2="240" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="740" y="226" text-anchor="middle" font-size="12" fill="#334155">SQL</text>
+  <text x="740" y="260" text-anchor="middle" font-size="12" fill="#334155">:5432</text>
+
+  <!-- Contenedor PostgreSQL -->
+  <rect x="790" y="150" width="190" height="180" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>
+  <text x="885" y="190" text-anchor="middle" font-size="16" font-weight="bold" fill="#1e3a8a">PostgreSQL</text>
+  <text x="885" y="210" text-anchor="middle" font-size="12" fill="#1e3a8a">contenedor postgres-atemto</text>
+  <text x="885" y="258" text-anchor="middle" font-size="13" fill="#0f172a">Historial de mensajes</text>
+  <text x="885" y="276" text-anchor="middle" font-size="12" fill="#475569">por thread_id</text>
+
+  <!-- API -> LLM -->
+  <line x1="450" y1="390" x2="450" y2="470" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="460" y="440" font-size="12" fill="#334155">HTTPS</text>
+  <rect x="370" y="470" width="160" height="60" rx="8" fill="#ede9fe" stroke="#6d28d9" stroke-width="2"/>
+  <text x="450" y="496" text-anchor="middle" font-size="15" font-weight="bold" fill="#4c1d95">LLM</text>
+  <text x="450" y="516" text-anchor="middle" font-size="12" fill="#4c1d95">Google Gemini</text>
+
+  <!-- API -> TMB -->
+  <line x1="610" y1="390" x2="610" y2="470" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="620" y="440" font-size="12" fill="#334155">HTTPS</text>
+  <rect x="530" y="470" width="160" height="60" rx="8" fill="#ffedd5" stroke="#c2410c" stroke-width="2"/>
+  <text x="610" y="496" text-anchor="middle" font-size="15" font-weight="bold" fill="#7c2d12">API TMB</text>
+  <text x="610" y="516" text-anchor="middle" font-size="12" fill="#7c2d12">iMetro (tiempos de paso)</text>
+
+  <!-- Leyenda -->
+  <rect x="40" y="540" width="26" height="14" fill="#fef9c3" stroke="#a16207" stroke-width="2" stroke-dasharray="4 3"/>
+  <text x="76" y="552" font-size="12" fill="#334155">Componente externo a este proyecto</text>
+</svg>
