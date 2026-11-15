@@ -27,11 +27,7 @@ def require_api_key(
     1) Servidor sin API_KEY en .env → 503 (mal configurado).
     2) Cliente sin clave o clave distinta → 401.
     3) Clave OK → rate limit; si pasa, devolvemos la clave (el endpoint sigue).
-    """
-
-    print(f"Requiring API key 3: {api_key}")
-    print(f"Server API key 3: {config.API_KEY}")
-    
+    """    
 
     # Fallo del servidor (no del cliente): falta secreto en el entorno
     if not config.API_KEY:
