@@ -1,6 +1,10 @@
 """ En este fichero se definen los parametros de configuración globales de todo el proyecto."""
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
 
 # --- Ingesta y chunking ---
 CHUNK_SIZE = 1000
@@ -60,3 +64,39 @@ ESTACIONS_CSV_PATH = Path(__file__).parent.parent / "assets"  / "estacions.csv"
 
 TMB_METRO_ESTACIONS_URL = "https://api.tmb.cat/v1/itransit/metro/estacions?estacions="
 HTTP_TIMEOUT_SECONDS = 12
+
+# --- Parámetros para la API ---
+
+API_KEY: str | None = os.getenv("API_KEY") or None
+RATE_LIMIT_PER_MINUTE: int = int(os.getenv("RATE_LIMIT_PER_MINUTE", "30"))
+
+# Tope de tiempo por turno (POST /ask y /approve).
+# Miramos si está definida en el docker o similar y sino lo marcamos a 300 segundos (5 minutos) por defecto.
+ASK_TIMEOUT_SECONDS: int = int(os.getenv("ASK_TIMEOUT_SECONDS", "300"))
+
+_cors_raw = os.getenv(
+    "CORS_ORIGINS",
+    "http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:8501,http://localhost:3000",
+)
+CORS_ORIGINS: list[str] = [o.strip() for o in _cors_raw.split(",") if o.strip()]
+
+CORS_ALLOW_CREDENTIALS: bool = os.getenv(
+    "CORS_ALLOW_CREDENTIALS", "false"
+).lower() in ("true", "1", "yes")
+
+
+# Usamos PostgreSQL como nuestra BBDD en entorno real. Sin DATABASE_URL la app no arranca.
+_db = (os.getenv("DATABASE_URL") or "").strip()
+if not _db:
+    raise RuntimeError(
+        "Falta DATABASE_URL (Postgres). Copiad .env.example → .env y completadla."
+    )
+# Render a veces entrega postgres:// ; SQLAlchemy espera postgresql://
+# Con psycopg[binary]>=3.2.0 hay que formatear la URL para que SQLAlchemy use postgresql+psycopg://
+if _db.startswith("postgres://"):
+    #_db = "postgresql://" + _db[len("postgres://") :]
+    _db = _db.replace("postgres://", "postgresql+psycopg://", 1)
+elif _db.startswith("postgresql://"):
+    #_db = "postgresql://" + _db[len("postgresql://") :]
+    _db = _db.replace("postgresql://", "postgresql+psycopg://", 1)
+DATABASE_URL = _db

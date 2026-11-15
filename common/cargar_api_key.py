@@ -14,7 +14,7 @@ def configurar_gemini_api_key() -> None:
     if _configured_gemini:
         return
 
-    load_dotenv()
+    load_dotenv(override=True)
 
     if not os.getenv("GEMINI_API_KEY"):
         os.environ["GEMINI_API_KEY"] = getpass.getpass(
