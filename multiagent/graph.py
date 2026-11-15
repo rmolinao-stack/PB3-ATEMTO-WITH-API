@@ -126,8 +126,6 @@ def _ejecutar_con_tools(
     else:
         texto = texto or "He parado por max_steps en el especialista."
 
-    #print("Resultado del especialista:", texto)
-    #print("Traza del especialista:", traza)
 
     return texto, traza
 
@@ -316,9 +314,6 @@ def nodo_sintetizar(estado: EstadoGrafo) -> dict:
     out = llm.invoke([HumanMessage(content=prompt)])
     texto = _texto_llm(out.content)
     plan = _parse_plan(texto)
-
-    print("Texto generado por el LLM:", texto)
-    print("Plan parseado:", plan)
     
     if len(plan) < 2:
         print("No se generó un plan, se usarán las opciones por defecto.")

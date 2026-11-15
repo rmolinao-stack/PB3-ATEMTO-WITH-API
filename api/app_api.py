@@ -64,7 +64,7 @@ async def lifespan(_app: FastAPI):
 
 
 app = FastAPI(
-    title="API ATeMto seguro",
+    title="API ATeMto - asistente",
     description=(
         "Agente LangGraph + historial la BBDD, con api_key, rate limit, CORS, "
         "logs por thread_id y timeout por turno. "

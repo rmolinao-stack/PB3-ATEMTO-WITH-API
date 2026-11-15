@@ -8,7 +8,8 @@ En este apartado se describen los detalles relacionados con la construcción de 
 En este apartado se describen los arreglos y mejoras que se han realizado sobre el RAG para este proyecto:
 
 * Se arreglan los errores tipográficos indicados en la evaluación del anterior proyecto. Concretamente: Nombre de la presentación, ficheros init en la estructura de carpetas, nombre incorrecto del repo.
-* Se ha añadido override=True a load_dotenv para garantizar que las variables se cargar siempre. Esto viene dado porque en varios lugares se cargar variables de entorno y para garantizar que el sistema siempre carga la última se fuerza la sobreescritura. Como mejora se debería refactorizar y hacer que todo tire de config, y en cofig que fuera el único sitio donde se carguen variables de entorno, pero esto está fuera del scope actual. 
+* Se ha añadido override=True a load_dotenv para garantizar que las variables se cargar siempre. Esto viene dado porque en varios lugares se cargar variables de entorno y para garantizar que el sistema siempre carga la última se fuerza la sobreescritura. Como mejora se debería refactorizar y hacer que todo tire de config, y en cofig que fuera el único sitio donde se carguen variables de entorno, pero esto está fuera del scope actual.
+* Se eliminan algunos prints de control que no tienen sentido en producción. 
 
 ## Dockers
 

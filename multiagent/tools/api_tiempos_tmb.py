@@ -127,7 +127,7 @@ def API_llegada_tren_estacion_tmb(id_estacion: int, forzar_fallback: bool = Fals
             url,
             timeout=HTTP_TIMEOUT_SECONDS,
         )
-        #print(f"RESPUESTA: {json.dumps(resp.json(), indent=4, ensure_ascii=False)}")
+  
         resp.raise_for_status()
         items = resp.json()
         resultado = _procesar_tiempos_llegada(items)
