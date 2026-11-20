@@ -100,3 +100,6 @@ elif _db.startswith("postgresql://"):
     #_db = "postgresql://" + _db[len("postgresql://") :]
     _db = _db.replace("postgresql://", "postgresql+psycopg://", 1)
 DATABASE_URL = _db
+
+#LIMITE DE CARACTERES PARA LA PREGUNTA
+MAX_PREGUNTA_CHARS = 20000
