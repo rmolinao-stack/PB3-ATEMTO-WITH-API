@@ -206,15 +206,9 @@ Tanto la API como la BBDD están desplegadas en Render.
 
 La API dispone de dos entornos:
 
-* **DEV (desarrollo)**: Apunta a la rama develop de GitHub y sirve para ir verificando el desarrollo sobre un entorno lo más realista posible a producción. La URL es la siguiente:
-
-```text
-https://atemto-api-dev.onrender.com/
-```
-* **PRO (producción)**: Apunta a la rama main de GitHub y es el producto final. La URL es la siguiente:
-```text
-https://atemto-api-pro.onrender.com/
-```
+* **DEV (desarrollo)**: Apunta a la rama develop de GitHub y sirve para ir verificando el desarrollo sobre un entorno lo más realista posible a producción. La URL debe consultarse con el responsable del proyecto.
+* 
+* **PRO (producción)**: Apunta a la rama main de GitHub y es el producto final. La URL debe consultarse con el responsable del proyecto.
 
 Por un tema de limitación de recursos solo hay un entorno de BBDD PostgreSQL en Render, y los dos entornos apuntan a la misma BBDD.
 
