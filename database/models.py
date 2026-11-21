@@ -1,6 +1,6 @@
 """Modelos SQLModel del historial.
 
-Cada clase con table=True = una tabla en historial.db.
+Cada clase con table=True = una tabla en PostgreSQL.
 Relación 1–N: una Conversation tiene muchos Message (FK thread_id).
 """
 

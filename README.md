@@ -1,14 +1,14 @@
 # ATeMto (With API)
 
-***PB3-ATEMTO-WITH-API*** *es una ampliación de **ATeMto**, que incluye todas las funcionalidades originales más una API que permite que otros clientes puedan consumirla de forma remota e interactuar con algunas de las funcionalidades internas de **ATeMto** para enriquecer sus sistemas.*
+***PB3-ATEMTO-WITH-API*** *es una ampliación de **ATeMto**: incluye todas las funcionalidades originales y añade una API para que otros clientes puedan consumirlo de forma remota e interactuar con algunas de sus funcionalidades internas, enriqueciendo así sus propios sistemas.*
 
-En general **ATeMto** es un empleado sintético capaz de calcular el trayecto entre dos estaciones de la red ATM de Barcelona (sistema integrado que permite utilizar diferentes medios de transporte como metro, autobuses, Ferrocarrils, TRAMvia y Rodalies), calcular los abonos necesarios a adquirir, así como dar información sobre sus tarifas y condiciones de uso, además de ser capaz de calcular el tiempo que tardará en llegar el siguiente metro (TMB) dada una estación concreta (no se incluye el cálculo del tiempo de llegada de convoyes a las estaciones de FGC, Rodalies, TRAMvia y autobuses ya que está fuera del scope del proyecto).
+En general, **ATeMto** es un empleado sintético capaz de calcular el trayecto entre dos estaciones de la red ATM de Barcelona (sistema integrado que permite utilizar diferentes medios de transporte: metro, autobuses, Ferrocarrils de la Generalitat (FGC), TRAMvia y Rodalies), calcular los abonos necesarios, informar sobre sus tarifas y condiciones de uso, y calcular el tiempo que tardará en llegar el siguiente metro (TMB) a una estación concreta. No se incluye el cálculo del tiempo de llegada de convoyes a las estaciones de FGC, Rodalies, TRAMvia ni de autobuses, porque está fuera del alcance del proyecto.
 
-**ATeMto** es una ampliación de **PB-RAG-ASISTENTE-TARIFAS-ATM-BCN** que es un asistente de tarifas y abonos para la red ATM de Barcelona - sistema tarifario integrado que permite utilizar diferentes medios de transporte (metro, autobuses, Ferrocarrils, TRAMvia y Rodalies). No es asistente de rutas, solo tarifas y abonos. Solo asiste tarifas de la ATM, no asiste tarifas de medio de transporte individual.
+**ATeMto** es una ampliación de **PB-RAG-ASISTENTE-TARIFAS-ATM-BCN**, un asistente de tarifas y abonos para la red ATM de Barcelona (sistema tarifario integrado que permite utilizar diferentes medios de transporte). Ese proyecto previo no calcula rutas y solo cubre las tarifas de la ATM, no las de los medios de transporte individuales.
 
-Por tanto **ATeMto** utiliza el RAG construido en **PB-RAG-ASISTENTE-TARIFAS-ATM-BCN**.
+Por tanto, **ATeMto** utiliza el RAG construido en **PB-RAG-ASISTENTE-TARIFAS-ATM-BCN**.
 
-**Novedades**: Para esta nueva versión **ATeMto** incorpora una API que permite que un cliente externo pueda consumir las propiedades de ATeMto, haciendo preguntas y obteniendo respuestas del ámbito de **ATeMto**, para más detalle ver sección correspondiente.
+**Novedades**: esta versión de **ATeMto** incorpora una API que permite a un cliente externo hacer preguntas a ATeMto y obtener sus respuestas. Para más detalle, ver la sección correspondiente.
 
 ## Estructura del proyecto
 
@@ -52,7 +52,10 @@ PB3-ATEMTO-WITH-API/
 ├── presentaciones/             # Presentaciones comerciales del producto
 │   ├── Presentacion_ATeMto.pdf # Presentación general del producto.
 │   └── Presentacion_API.pdf    # Presentación de la API del producto.
-├── queries/                    # preguntas de evaluación para el RAG
+├── queries/                    # Preguntas de evaluación para el RAG y resultados de las evaluaciones
+│   ├── preguntas_eval.json
+│   ├── preguntas_respuestas_topk1.md
+│   └── preguntas_respuestas_topk5.md
 ├── rag/                        # Carpeta donde guardamos los ficheros de la capa de negocio del RAG.
 │   ├── pipeline.py             # Orquestador de la ingesta y otras llamadas.
 │   ├── load.py                 # Revisa los ficheros del corpus y lo carga con metadatos.
@@ -102,23 +105,25 @@ Se deben instalar los paquetes requeridos:
 pip install -r requirements.txt
 ```
 
-Se deben crear las API KEY y el resto de variables en .env usando el ejemplo:
+Se deben crear las API KEY y el resto de variables en `.env` usando el ejemplo:
 
 ```text
 cp .env.example .env
 ```
 
+**Importante:** `DATABASE_URL` es obligatoria en todos los modos de ejecución (API, Streamlit y CLI): `common/config.py` lanza un error al importarse si falta.
+
 ### API Keys y variables de entorno necesarias:
 
-* **GEMINI_API_KEY**: Api key del LLM de Gemini. Necesario tanto para el embedding del RAG, como para la ejecución del asistente de tarifas, como del multiagente.
-* **TMB_API_ID**: Identificador de la aplicación dada de alta en developer.tmb.cat. Para más información ver apartado especial de esta API en la memoria y visitar: https://developer.tmb.cat/docs/getting-started
-* **TMB_API_KEY**: Api Key para conectar al servicio de iMetro para conocer en tiempo real cuándo llega el siguiente tren a una estación. Para más información ver apartado especial de esta API en la memoria y visitar: https://developer.tmb.cat/docs/getting-started
+* **GEMINI_API_KEY**: API key de Gemini. Necesaria tanto para el embedding del RAG como para la ejecución del asistente de tarifas y del multiagente.
+* **TMB_API_ID**: Identificador de la aplicación dada de alta en developer.tmb.cat. Se usa junto con `TMB_API_KEY`. Para más información ver el apartado especial de esta API en la memoria y visitar: https://developer.tmb.cat/docs/getting-started
+* **TMB_API_KEY**: API key para conectar con el servicio iMetro y conocer en tiempo real cuándo llega el siguiente tren a una estación. Se usa junto con `TMB_API_ID`. Para más información ver el apartado especial de esta API en la memoria y visitar: https://developer.tmb.cat/docs/getting-started
 * **API_KEY**: Clave que deben enviar los clientes de la API de ATeMto (parámetro `api_key`) para acceder a los endpoints protegidos.
 * **RATE_LIMIT_PER_MINUTE**: Máximo de peticiones por clave en 60 s.
 * **CORS_ORIGINS**: Orígenes permitidos por CORS, separados por coma.
 * **CORS_ALLOW_CREDENTIALS**: Permite enviar cookies y credenciales en las peticiones CORS (debe ser `false` si `CORS_ORIGINS=*`).
 * **ASK_TIMEOUT_SECONDS**: Timeout por turno del agente en la API.
-* **DATABASE_URL**: URL de la base de datos PostgreSQL donde se persiste el historial de la API.
+* **DATABASE_URL**: URL de la base de datos PostgreSQL donde se persiste el historial de la API. Obligatoria en todos los modos de ejecución.
 
 ## Modos de Ejecución ATeMto local
 
@@ -134,12 +139,12 @@ Hay dos modos de ejecución:
   python main.py --index                   #"Indexar en ChromaDB"
   python main.py --recreate-index          #"Borra la colección de ChromaDB antes de indexar"
   python main.py --query                   #"Pregunta de prueba que solo ataca al retrieval (recuperación de contexto)"
-  python main.py --ask                     #"Pregunta con respusta generada por el modelo (RAG completo)"
+  python main.py --ask                     #"Pregunta con respuesta generada por el modelo (RAG completo)"
   python main.py --eval                    #"Evaluación con preguntas preestablecidas"
   python main.py --top-k                   #"Sobreescribe TOP-K"
   ```
 
-  * Modo 2: Desde línea de comandos usar *streamlit run app_rag.py*. Ejecuta el servidor de streamlit y abre un chat para interactuar con el asistente.
+* Modo 2: Desde línea de comandos usar *streamlit run app_rag.py*. Ejecuta el servidor de Streamlit y abre un chat para interactuar con el asistente.
 
 ```text
 streamlit run app_rag.py
@@ -159,7 +164,7 @@ Hay dos modos de ejecución:
   python main.py --agente-sin-auto-aprobar      # Solo para --agente-demo. Desactiva la autoaprobación de acciones.
 ```
 
-  * Modo 2: Desde línea de comandos usar *streamlit run app_agent.py*. Ejecuta el servidor de streamlit y abre un chat para interactuar con el asistente.
+* Modo 2: Desde línea de comandos usar *streamlit run app_agent.py*. Ejecuta el servidor de Streamlit y abre un chat para interactuar con el multiagente.
 
 ```text
 streamlit run app_agent.py
@@ -184,7 +189,7 @@ uvicorn api.app_api:app --reload --port 8000
 
 Una vez arrancada, la documentación interactiva está en http://127.0.0.1:8000/docs. Endpoints: `GET /health` (público), `POST /ask`, `POST /approve` y `GET /threads/{thread_id}/messages` (estos tres requieren `api_key`).
 
-**Nota 1:** Para que la API funcione es necesario que exista una BBDD PostgreSQL, para más detalle ver la memoria del proyecto. 
+**Nota 1:** `DATABASE_URL` es obligatoria en cualquier modo de ejecución y, para que la API funcione, la BBDD PostgreSQL debe estar accesible. Para más detalle ver la memoria del proyecto.
 
 **Nota 2:** Se recomienda el uso de Docker, para más detalle ver la memoria del proyecto. 
 
@@ -229,7 +234,6 @@ La API requiere de una BBDD PostgreSQL para persistir las conversaciones. El det
 
 **Memoria de la API y MLOps**: [Pulsa aquí](./entregables/memoria_api_mlops.md)
 * En esta memoria podrás encontrar los detalles de los contenedores Docker (API y PostgreSQL), el gráfico del sistema desplegado, el contrato de los endpoints, los datos que se persisten, los entornos de despliegue en Render, la prueba de vida, las conclusiones de arquitectura, costes y CI/CD, y las mejoras pendientes.
-
 
 
 

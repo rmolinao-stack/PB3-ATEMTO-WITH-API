@@ -1,7 +1,7 @@
-"""Persistencia del historial con SQLModel + SQLite.
+"""Persistencia del historial con SQLModel + PostgreSQL.
 
-Este módulo es lo que la API llama para escribir/leer historial.db.
-Modelos → src/models.py | Quién llama → app.py (tras /ask o /approve).
+Este módulo es lo que la API llama para escribir/leer el historial en PostgreSQL.
+Modelos → database/models.py | Quién llama → api/app_api.py (tras /ask o /approve).
 """
 
 from typing import Any
@@ -60,5 +60,5 @@ def list_messages(thread_id: str) -> list[dict[str, Any]]:
 
 
 def storage_mode() -> str:
-    """Valor que muestra /health → 'postgresql' o 'sqlite' o el motor de base de datos usado."""
+    """Valor que muestra /health → el motor de base de datos usado (normalmente 'postgresql')."""
     return engine.dialect.name

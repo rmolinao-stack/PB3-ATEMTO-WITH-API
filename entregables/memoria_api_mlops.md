@@ -7,8 +7,9 @@ En este apartado se describen los detalles relacionados con la construcción de 
 En este apartado se describen los arreglos y mejoras que se han realizado sobre la versión anterior de **ATeMto** para este proyecto:
 
 * Se arreglan los errores tipográficos indicados en la evaluación del anterior proyecto. Concretamente: Nombre de la presentación, ficheros init en la estructura de carpetas, nombre incorrecto del repo.
-* Se ha añadido override=True a load_dotenv para garantizar que las variables se cargan siempre. Esto viene dado porque en varios lugares se cargan variables de entorno y para garantizar que el sistema siempre carga la última se fuerza la sobreescritura. Como mejora se debería refactorizar y hacer que todo tire de config, y que config fuera el único sitio donde se carguen variables de entorno, pero esto está fuera del scope actual.
-* Se eliminan algunos prints de control que no tienen sentido en producción. 
+* Se ha añadido `override=True` a `load_dotenv` para garantizar que las variables se cargan siempre. Esto se debe a que `load_dotenv` se invoca en varios ficheros (`common/config.py`, `common/cargar_api_key.py` y `multiagent/tools/api_tiempos_tmb.py`) y, para garantizar que siempre prevalezca el valor del `.env`, se fuerza la sobreescritura. Como mejora, `config.py` debería ser el único sitio donde se carguen variables de entorno, y el resto de módulos deberían leerlas desde `config`, pero esto queda fuera del alcance actual.
+* Se eliminan algunos prints de control que no tienen sentido en producción.
+* Se sustituyen los restos de SQLite (comentarios y docstrings) por PostgreSQL, que es la BBDD real del proyecto.
 
 ## Docker
 
@@ -29,12 +30,18 @@ docker run --rm --name atemto-container -p 8000:8000 --env-file .env atemto-imag
 
 ### Postgres
 
-Creación de la imagen y arranque del contenedor:
+Descarga de la imagen oficial y arranque del contenedor:
 
 ```text
 docker run --name postgres-atemto -e POSTGRES_USER=EL_USUARIO -e POSTGRES_PASSWORD=EL_PASSWORD -e POSTGRES_DB=NOMBRE_DB -p 5432:5432 -d postgres
 ```
 Hay que sustituir las variables con los datos correctos.
+
+Para que la API use esta BBDD hay que informar `DATABASE_URL` en el `.env`. Si la API se ejecuta con `uvicorn` directamente en la máquina, el host es `localhost`. Si la API se ejecuta en un contenedor Docker, `localhost` apunta al propio contenedor, así que en Docker Desktop hay que usar `host.docker.internal` (o poner ambos contenedores en la misma red Docker y usar el nombre del contenedor, `postgres-atemto`). Por ejemplo:
+
+```text
+DATABASE_URL=postgresql://EL_USUARIO:EL_PASSWORD@host.docker.internal:5432/NOMBRE_DB
+```
 
 ## Gráfico del sistema desplegado
 
@@ -44,7 +51,7 @@ Hay que sustituir las variables con los datos correctos.
 * **API ATeMto**: contenedor Docker con FastAPI (desplegado en Render), que incluye el multiagente LangGraph y el RAG de tarifas (ChromaDB).
 * **PostgreSQL**: contenedor Docker (desplegado en Render) donde se guarda el historial de mensajes por `thread_id`.
 * **LLM**: Google Gemini, al que accede la API por HTTPS.
-* **API TMB iMetro**: servicio externo que consulta la tool de tiempos de llegada del metro.
+* **API TMB iMetro**: servicio externo al que consulta la tool de tiempos de llegada del metro.
 
 ## Contrato - EndPoints
 
@@ -79,7 +86,7 @@ Body (JSON):
 
 | Campo | Tipo | Obligatorio | Descripción |
 |-------|------|:-----------:|-------------|
-| `pregunta` | string | Sí | Pregunta del usuario (1-2000 caracteres) |
+| `pregunta` | string | Sí | Pregunta del usuario (1-20000 caracteres, `MAX_PREGUNTA_CHARS` en `common/config.py`) |
 | `thread_id` | string | No | Identificador de la conversación (máx. 100 caracteres). Por defecto `default`. Reutilizarlo mantiene el contexto |
 | `auto_aprobar` | boolean | No | Por defecto `true`: si el agente deja un plan pendiente de aprobación, se aprueba automáticamente |
 
@@ -143,10 +150,10 @@ curl "http://127.0.0.1:8000/threads/thread-1/messages?api_key=mi_api_key"
 
 | Código | Cuándo |
 |:------:|--------|
-| 400 | `/ask` con pregunta vacía, o `/approve` sin plan pendiente en el hilo |
+| 400 | `/ask` con una pregunta que queda vacía tras quitar espacios (por ejemplo, solo espacios), o `/approve` sin plan pendiente en el hilo |
 | 401 | `api_key` ausente o inválida |
 | 404 | `/approve` sobre un `thread_id` sin sesión (hay que llamar antes a `/ask`) |
-| 422 | Body o parámetros que no cumplen el contrato (validación) |
+| 422 | Body o parámetros que no cumplen el contrato (validación), por ejemplo `pregunta` vacía (`""`) o más larga de lo permitido, o `thread_id` de más de 100 caracteres |
 | 429 | Se supera `RATE_LIMIT_PER_MINUTE` |
 | 503 | El servidor no tiene `API_KEY` configurada |
 | 504 | El turno del agente supera `ASK_TIMEOUT_SECONDS` |
@@ -188,10 +195,10 @@ Consecuencias prácticas:
 
 El reinicio ocurre, por ejemplo, en cada deploy de Render o cuando Render reinicia el servicio. Además, estos datos no se comparten entre procesos: con varios workers o varias instancias, cada uno tendría su propio `MemorySaver`.
 
-Otros puntos a tener en cuenta:
+Limitaciones conocidas:
 
 * Los entornos DEV y PRO usan la misma base de datos, por lo que un mismo `thread_id` en ambos escribe en la misma conversación.
-* Si el cliente no envía `thread_id`, se usa `default`, que es compartido por todos los clientes que lo omitan.
+* Si el cliente no envía `thread_id`, se usa `default`, que es compartido por todos los clientes que lo omitan. Por tanto, esos clientes comparten contexto e historial.
 
 ## Entornos de despliegue (Render)
 
@@ -233,7 +240,7 @@ Con esto se confirma lo descrito en el apartado "Datos": tras un reinicio se pie
 
 **Factura de infraestructura (web + Postgres).** Hoy es de 0 €/mes, porque ambos servicios usan el plan Free. En un plan de pago de entrada, el orden de magnitud sería de unos 10-15 USD/mes en total (alrededor de 7 USD el Web Service y 6 USD la base de datos; ver los precios actuales en render.com/pricing).
 
-**Factura de tokens de un `/ask`.** Un `/ask` encadena varias llamadas al LLM (supervisor, especialista con tools, RAG y síntesis, con un máximo de 4 pasos por turno). No se ha medido el consumo real. Hoy es 0 € porque usamos la cuota gratuita de Gemini, pero al ser una API pública sin control de gasto por usuario, el coste real es el riesgo descrito en "Cosas a mejorar" (clave por consumidor y LLM local).
+**Factura de tokens de un `/ask`.** Un `/ask` encadena varias llamadas al LLM (supervisor, especialista con tools, RAG y síntesis). Cada especialista puede hacer hasta 4 pasos modelo↔tools (`MAX_STEPS_DEFAULT`) y el supervisor se limita a 8 iteraciones (`MAX_ITER`). No se ha medido el consumo real. Hoy es 0 € porque usamos la cuota gratuita de Gemini, pero al ser una API pública sin control de gasto por usuario, el coste real es el riesgo descrito en "Cosas a mejorar" (clave por consumidor y LLM local).
 
 ## Conclusiones de CI/CD
 
@@ -245,10 +252,10 @@ Con esto se confirma lo descrito en el apartado "Datos": tras un reinicio se pie
 
 ## Cosas a mejorar
 
-* **LLM local**: Al ser una API pública corremos el riesgo de gastar muchos tokens sin control. Una solución podría ser montar el servicio con un LLM local que no consuma tokens. Obviamente esto tiene varias peculiaridades: tenemos que tener una infraestructura propia (que podría ser en la nube) y su mantenimiento, hay que tener en cuenta una serie de costes indirectos (por ejemplo alquiler de servidor o consumo eléctrico) y las limitaciones del LLM local seleccionado.
-* **Key por consumidor (APP_KEY)**: Para mejorar el control de uso y la seguridad, se podría añadir una APP_KEY (como la de TMB) y mantenerla en la BBDD. De tal manera que cada consumidor tendría su APP_KEY y así podríamos tener un control de "quién" hace las llamadas y qué llamadas. Obviamente esto implicaría cambiar el modelo de datos de conversaciones y mensajes.
-* **Key por header vía X-API-KEY**: Para mejorar la seguridad lo ideal es NO pasar la key por parámetros sino por header.
-* **Cargar variables de entorno solo en config**: Al heredar el código de proyectos anteriores, se ha detectado que en varios puntos distintos de config.py se cargan variables de entorno. Esto no es una buena práctica, ya que puede provocar que ciertas variables queden en memoria. Se debería centralizar la carga de estas variables en config, y refactorizar el código para que el resto de .py solo carguen parámetros del sistema desde config sin usar la carga de variables de entorno.
+* **LLM local**: Al ser una API pública corremos el riesgo de gastar muchos tokens sin control. Una solución podría ser montar el servicio con un LLM local que no consuma tokens. Esto tiene varias implicaciones: hace falta una infraestructura propia (que podría estar en la nube) y su mantenimiento, hay costes indirectos (por ejemplo, alquiler de servidor o consumo eléctrico) y hay que asumir las limitaciones del LLM local seleccionado.
+* **Key por consumidor (APP_KEY)**: Para mejorar el control de uso y la seguridad, se podría añadir una APP_KEY (como la de TMB) y mantenerla en la BBDD, de modo que cada consumidor tenga la suya y podamos saber quién hace las llamadas y cuáles. Esto exigiría cambiar el modelo de datos de conversaciones y mensajes.
+* **Enviar la key por cabecera (`X-API-Key`)**: Para mejorar la seguridad, la clave no debería ir en la URL como parámetro de query, porque queda registrada en logs de proxies y en el historial de navegación. Lo ideal es enviarla en una cabecera.
+* **Cargar variables de entorno solo en config**: Al heredar el código de proyectos anteriores, se ha detectado que `load_dotenv` se llama también fuera de `common/config.py` (en `common/cargar_api_key.py` y `multiagent/tools/api_tiempos_tmb.py`). Esto no es una buena práctica: hay varios puntos de carga y la precedencia de los valores puede variar. Se debería centralizar la carga en `config.py` y refactorizar el resto de módulos para que lean sus parámetros desde `config`.
 
 
 
