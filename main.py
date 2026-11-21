@@ -171,7 +171,7 @@ def main() -> None:
     parser.add_argument("--index", action="store_true", help="Indexar en ChromaDB")
     parser.add_argument("--recreate-index", action="store_true", help="Borra la colección de ChromaDB antes de indexar")
     parser.add_argument("--query", type=str, help="Pregunta de prueba que solo ataca al retrieval (recuperación de contexto)")
-    parser.add_argument("--ask", type=str, help="Pregunta con respusta generada por el modelo (RAG completo)")
+    parser.add_argument("--ask", type=str, help="Pregunta con respuesta generada por el modelo (RAG completo)")
     parser.add_argument("--eval", action="store_true", help="Evaluación del retrieval con preguntas preestablecidas")
     parser.add_argument("--top-k", type=int, default=None, help="Sobreescribe TOP-K")
     

@@ -36,7 +36,7 @@ class ApproveIn(BaseModel):
 
 
 class MessageOut(BaseModel):
-    """Un mensaje del historial SQL de ATeMTO."""
+    """Un mensaje del historial de ATeMTO guardado en PostgreSQL."""
 
     role: str
     content: str

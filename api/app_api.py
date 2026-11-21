@@ -58,7 +58,7 @@ def _con_timeout(fn: Callable[..., T], *args) -> T:
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    # Al arrancar: CREATE TABLE si historial.db aún no tiene schema
+    # Al arrancar: CREATE TABLE si la BBDD PostgreSQL aún no tiene schema
     db.ensure_schema()
     yield
 
@@ -105,7 +105,7 @@ def _a_ask_out(estado: dict, thread_id: str) -> AskOut:
 
 
 def _persistir_si_hay_respuesta(thread_id: str, pregunta: str, estado: dict) -> None:
-    """Puente API → SQL: escribe user+assistant en historial.db vía db.save_turn."""
+    """Puente API → BBDD: escribe user+assistant en PostgreSQL vía db.save_turn."""
     respuesta = (estado.get("respuesta") or "").strip()
     if not respuesta:
         return
